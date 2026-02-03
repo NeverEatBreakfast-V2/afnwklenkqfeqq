@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>School Link Checker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97373;
+      --warning: #facc15;
+      --success: #4ade80;
+      --unknown: #a855f7;
+      --border: #1f2937;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow:
+        0 24px 60px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+      padding: 20px 22px 22px;
+      backdrop-filter: blur(18px);
+    }
+
+    @media (min-width: 768px) {
+      .app {
+        padding: 24px 28px 26px;
+      }
+    }
+
+    .app-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--muted);
+      background: radial-gradient(circle at top left, rgba(148,163,184,0.2), transparent 55%);
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .status-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      align-items: center;
+    }
+
+    .legend-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      border: 1px solid transparent;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .badge-blocked {
+      color: var(--danger);
+      border-color: rgba(248,113,113,0.5);
+      background: radial-gradient(circle at top left, rgba(248,113,113,0.18), transparent 60%);
+    }
+
+    .badge-blocked .badge-dot {
+      background: var(--danger);
+    }
+
+    .badge-review {
+      color: var(--warning);
+      border-color: rgba(250,204,21,0.5);
+      background: radial-gradient(circle at top left, rgba(250,204,21,0.18), transparent 60%);
+    }
+
+    .badge-review .badge-dot {
+      background: var(--warning);
+    }
+
+    .badge-good {
+      color: var(--success);
+      border-color: rgba(74,222,128,0.5);
+      background: radial-gradient(circle at top left, rgba(74,222,128,0.18), transparent 60%);
+    }
+
+    .badge-good .badge-dot {
+      background: var(--success);
+    }
+
+    .badge-unknown {
+      color: var(--unknown);
+      border-color: rgba(168,85,247,0.5);
+      background: radial-gradient(circle at top left, rgba(168,85,247,0.18), transparent 60%);
+    }
+
+    .badge-unknown .badge-dot {
+      background: var(--unknown);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid rgba(30,64,175,0.7);
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(59,130,246,0.12), transparent 55%),
+        rgba(15,23,42,0.96);
+      padding: 12px 12px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(148,163,184,0.18), transparent 40%, transparent 60%, rgba(56,189,248,0.18));
+      mix-blend-mode: soft-light;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-title span.icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: radial-gradient(circle at top, rgba(56,189,248,0.4), rgba(15,23,42,0.9));
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.4);
+    }
+
+    .hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      opacity: 0.9;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.9);
+      color: var(--text);
+      padding: 10px 11px;
+      font-family: var(--font);
+      font-size: 0.8rem;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,0.6),
+        0 0 0 8px rgba(56,189,248,0.12);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.9);
+      background: radial-gradient(circle at top, rgba(56,189,248,0.9), rgba(37,99,235,0.9));
+      color: #0b1120;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 7px 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow:
+        0 12px 30px rgba(37,99,235,0.7),
+        0 0 0 1px rgba(15,23,42,0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .small-text {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .results-table-wrapper {
+      max-height: 260px;
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(30,64,175,0.8);
+      background: rgba(15,23,42,0.96);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(to bottom, rgba(15,23,42,1), rgba(15,23,42,0.96));
+      z-index: 2;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(30,64,175,0.6);
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .col-url {
+      max-width: 260px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.75rem;
+      color: #e5e7eb;
+    }
+
+    .col-domain {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .col-status {
+      width: 1%;
+    }
+
+    .col-reason {
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      border: 1px solid transparent;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .status-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .status-blocked {
+      color: var(--danger);
+      border-color: rgba(248,113,113,0.6);
+      background: radial-gradient(circle at top left, rgba(248,113,113,0.18), transparent 60%);
+    }
+
+    .status-blocked .status-pill-dot {
+      background: var(--danger);
+    }
+
+    .status-review {
+      color: var(--warning);
+      border-color: rgba(250,204,21,0.6);
+      background: radial-gradient(circle at top left, rgba(250,204,21,0.18), transparent 60%);
+    }
+
+    .status-review .status-pill-dot {
+      background: var(--warning);
+    }
+
+    .status-good {
+      color: var(--success);
+      border-color: rgba(74,222,128,0.6);
+      background: radial-gradient(circle at top left, rgba(74,222,128,0.18), transparent 60%);
+    }
+
+    .status-good .status-pill-dot {
+      background: var(--success);
+    }
+
+    .status-unknown {
+      color: var(--unknown);
+      border-color: rgba(168,85,247,0.6);
+      background: radial-gradient(circle at top left, rgba(168,85,247,0.18), transparent 60%);
+    }
+
+    .status-unknown .status-pill-dot {
+      background: var(--unknown);
+    }
+
+    .empty-state {
+      padding: 18px 14px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .empty-state span {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      opacity: 0.9;
+    }
+
+    .footer-note strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-header">
+      <div class="title-block">
+        <h1>
+          School Link Checker
+          <span class="pill">Heuristic URL triage</span>
+        </h1>
+        <div class="subtitle">
+          Paste URLs from student history. This tool classifies links as blocked, needs review, good, or unsure using rule-based logic.
+        </div>
+      </div>
+      <div class="status-legend">
+        <span class="legend-label">Legend</span>
+        <span class="badge badge-blocked">
+          <span class="badge-dot"></span> Blocked
+        </span>
+        <span class="badge badge-review">
+          <span class="badge-dot"></span> Needs review
+        </span>
+        <span class="badge badge-good">
+          <span class="badge-dot"></span> Good
+        </span>
+        <span class="badge badge-unknown">
+          <span class="badge-dot"></span> Unsure
+        </span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- Input card -->
+      <div class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="icon">🔗</span>
+              Input URLs
+            </div>
+            <div class="hint">One URL per line. Raw or full URLs are fine.</div>
+          </div>
+          <textarea id="urlInput" placeholder="Examples:
+https://boomlings.com
+discord.com/channels/...
+unblockedgames123.net
+https://www.khanacademy.org/math
+"></textarea>
+          <div class="controls">
+            <button id="scanBtn" class="btn">
+              <span class="icon">⚡</span>
+              Scan links
+            </button>
+            <div class="small-text">
+              Basic heuristic engine. You can later plug in real filter APIs behind this UI.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results card -->
+      <div class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="icon">📊</span>
+              Results
+            </div>
+            <div class="hint" id="summaryHint">No scan yet.</div>
+          </div>
+          <div class="results-table-wrapper" id="resultsWrapper">
+            <div class="empty-state" id="emptyState">
+              <span>Run a scan to see classifications.</span>
+              This is a local, rule-based approximation—not a replacement for enterprise filters.
+            </div>
+            <table id="resultsTable" style="display:none;">
+              <thead>
+                <tr>
+                  <th>URL</th>
+                  <th>Domain</th>
+                  <th>Status</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+          </div>
+          <div class="footer-note">
+            <strong>Note:</strong> This uses keyword and pattern rules (games, proxies, social, edu, etc.). Treat “Needs review” and “Unsure” as prompts for human judgment or deeper scanning.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Utility: normalize URL and extract domain ---
+    function normalizeUrl(raw) {
+      if (!raw) return null;
+      let trimmed = raw.trim();
+      if (!trimmed) return null;
+
+      // Add protocol if missing so URL() doesn't explode
+      if (!/^https?:\/\//i.test(trimmed) && !/^ftp:\/\//i.test(trimmed)) {
+        trimmed = "https://" + trimmed;
+      }
+
+      try {
+        const url = new URL(trimmed);
+        return {
+          original: raw.trim(),
+          href: url.href,
+          domain: url.hostname.toLowerCase(),
+          path: url.pathname + url.search
+        };
+      } catch (e) {
+        // Not a valid URL, but we still return something minimal
+        return {
+          original: raw.trim(),
+          href: raw.trim(),
+          domain: "",
+          path: ""
+        };
+      }
+    }
+
+    // --- Heuristic classification engine ---
+    // You can tweak these lists to match your school's policy.
+    const blockedKeywords = [
+      // obvious bypass / proxy / vpn
+      "unblockedgames",
+      "unblocked-games",
+      "unblock",
+      "proxy",
+      "webproxy",
+      "vpn",
+      "ultraviolet",
+      "holyub",
+      "shadowrocket",
+      "bypass",
+      "circumvent",
+      "kproxy",
+      "hidemyass",
+      "tor2web",
+      "onion",
+      // explicit content (keep generic)
+      "porn",
+      "nsfw",
+      "hentai",
+      "sex",
+      "xxx"
+    ];
+
+    const needsReviewKeywords = [
+      // general gaming
+      "game",
+      "games",
+      "roblox",
+      "minecraft",
+      "fortnite",
+      "steam",
+      "epicgames",
+      "leagueoflegends",
+      "valorant",
+      "riotgames",
+      // social / chat
+      "discord",
+      "tiktok",
+      "instagram",
+      "snapchat",
+      "reddit",
+      "twitter",
+      "x.com",
+      "facebook",
+      "messenger",
+      "whatsapp",
+      // streaming / entertainment
+      "youtube",
+      "netflix",
+      "hulu",
+      "spotify",
+      "twitch",
+      "crunchyroll",
+      // AI / tools that might be policy-sensitive
+      "chatgpt",
+      "openai",
+      "claude",
+      "perplexity",
+      "character.ai"
+    ];
+
+    const goodEduKeywords = [
+      "khanacademy.org",
+      "desmos.com",
+      "nasa.gov",
+      "noaa.gov",
+      "nationalgeographic.com",
+      "smithsonian",
+      "ed.gov",
+      "collegeboard.org",
+      "quizlet.com",
+      "duolingo.com",
+      "wikipedia.org",
+      "britannica.com",
+      "code.org"
+    ];
+
+    function classifyLink(info) {
+      const url = (info.href || "").toLowerCase();
+      const domain = (info.domain || "").toLowerCase();
+      const path = (info.path || "").toLowerCase();
+      const combined = domain + path;
+
+      // If URL parsing failed badly
+      if (!domain && !url) {
+        return {
+          status: "unknown",
+          label: "Unsure",
+          reason: "Could not parse URL.",
+        };
+      }
+
+      // 1. Good: strong educational signals
+      if (domain.endsWith(".edu")) {
+        return {
+          status: "good",
+          label: "Good",
+          reason: "Domain uses .edu TLD (likely educational)."
+        };
+      }
+
+      if (domain.endsWith(".gov")) {
+        return {
+          status: "good",
+          label: "Good",
+          reason: "Domain uses .gov TLD (official/government)."
+        };
+      }
+
+      for (const kw of goodEduKeywords) {
+        if (combined.includes(kw)) {
+          return {
+            status: "good",
+            label: "Good",
+            reason: "Matches known educational/resource domain."
+          };
+        }
+      }
+
+      // 2. Blocked: obvious proxies / explicit / bypass
+      for (const kw of blockedKeywords) {
+        if (combined.includes(kw)) {
+          return {
+            status: "blocked",
+            label: "Blocked",
+            reason: `Contains high-risk keyword: "${kw}".`
+          };
+        }
+      }
+
+      // 3. Needs review: games, social, streaming, etc.
+      for (const kw of needsReviewKeywords) {
+        if (combined.includes(kw)) {
+          return {
+            status: "review",
+            label: "Needs review",
+            reason: `Contains distraction/monitor keyword: "${kw}".`
+          };
+        }
+      }
+
+      // 4. Good: generic but common productivity / docs
+      if (
+        domain.includes("google.com") &&
+        (path.startsWith("/docs") || path.startsWith("/spreadsheets") || path.startsWith("/presentation"))
+      ) {
+        return {
+          status: "good",
+          label: "Good",
+          reason: "Looks like a Google Docs/Sheets/Slides link."
+        };
+      }
+
+      if (domain.includes("microsoft.com") || domain.includes("office.com")) {
+        return {
+          status: "good",
+          label: "Good",
+          reason: "Microsoft/Office domain (likely productivity)."
+        };
+      }
+
+      // 5. Unsure: everything else
+      return {
+        status: "unknown",
+        label: "Unsure",
+        reason: "No strong signals. Requires human or deeper filter review."
+      };
+    }
+
+    // --- Rendering ---
+    const urlInput = document.getElementById("urlInput");
+    const scanBtn = document.getElementById("scanBtn");
+    const resultsWrapper = document.getElementById("resultsWrapper");
+    const resultsTable = document.getElementById("resultsTable");
+    const resultsBody = document.getElementById("resultsBody");
+    const emptyState = document.getElementById("emptyState");
+    const summaryHint = document.getElementById("summaryHint");
+
+    function renderResults(results) {
+      resultsBody.innerHTML = "";
+
+      if (!results.length) {
+        resultsTable.style.display = "none";
+        emptyState.style.display = "block";
+        summaryHint.textContent = "No valid URLs found.";
+        return;
+      }
+
+      let counts = {
+        blocked: 0,
+        review: 0,
+        good: 0,
+        unknown: 0
+      };
+
+      for (const r of results) {
+        counts[r.status] = (counts[r.status] || 0) + 1;
+
+        const tr = document.createElement("tr");
+
+        const tdUrl = document.createElement("td");
+        tdUrl.className = "col-url";
+        tdUrl.title = r.info.original;
+        tdUrl.textContent = r.info.original || "(empty)";
+        tr.appendChild(tdUrl);
+
+        const tdDomain = document.createElement("td");
+        tdDomain.className = "col-domain";
+        tdDomain.textContent = r.info.domain || "—";
+        tr.appendChild(tdDomain);
+
+        const tdStatus = document.createElement("td");
+        tdStatus.className = "col-status";
+        const pill = document.createElement("span");
+        pill.className = "status-pill status-" + r.status;
+        const dot = document.createElement("span");
+        dot.className = "status-pill-dot";
+        const label = document.createElement("span");
+        label.textContent = r.label;
+        pill.appendChild(dot);
+        pill.appendChild(label);
+        tdStatus.appendChild(pill);
+        tr.appendChild(tdStatus);
+
+        const tdReason = document.createElement("td");
+        tdReason.className = "col-reason";
+        tdReason.textContent = r.reason;
+        tr.appendChild(tdReason);
+
+        resultsBody.appendChild(tr);
+      }
+
+      resultsTable.style.display = "table";
+      emptyState.style.display = "none";
+
+      const total = results.length;
+      summaryHint.textContent =
+        `Scanned ${total} link${total !== 1 ? "s" : ""}: ` +
+        `${counts.blocked} blocked, ` +
+        `${counts.review} needs review, ` +
+        `${counts.good} good, ` +
+        `${counts.unknown} unsure.`;
+    }
+
+    function runScan() {
+      const raw = urlInput.value || "";
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+      const results = [];
+      for (const line of lines) {
+        const info = normalizeUrl(line);
+        const classification = classifyLink(info);
+        results.push({
+          info,
+          ...classification
+        });
+      }
+
+      renderResults(results);
+    }
+
+    scanBtn.addEventListener("click", () => {
+      runScan();
+    });
+
+    // Allow Ctrl+Enter / Cmd+Enter to scan
+    urlInput.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runScan();
+      }
+    });
+  </script>
+</body>
+</html>
