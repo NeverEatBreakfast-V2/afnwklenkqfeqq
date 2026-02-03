@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>School Link Checker</title>
+  <title>School Link Scanner – Talos + FortiGuard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #0f172a;
+      --bg: #020617;
       --card: #020617;
       --accent: #38bdf8;
       --accent-soft: rgba(56, 189, 248, 0.15);
@@ -20,9 +20,7 @@
       --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -38,21 +36,15 @@
 
     .app {
       width: 100%;
-      max-width: 960px;
+      max-width: 1040px;
       background: linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
       border-radius: 18px;
       border: 1px solid rgba(148,163,184,0.25);
       box-shadow:
         0 24px 60px rgba(15,23,42,0.9),
         0 0 0 1px rgba(15,23,42,0.9);
-      padding: 20px 22px 22px;
+      padding: 22px 24px 24px;
       backdrop-filter: blur(18px);
-    }
-
-    @media (min-width: 768px) {
-      .app {
-        padding: 24px 28px 26px;
-      }
     }
 
     .app-header {
@@ -133,51 +125,37 @@
       border-color: rgba(248,113,113,0.5);
       background: radial-gradient(circle at top left, rgba(248,113,113,0.18), transparent 60%);
     }
-
-    .badge-blocked .badge-dot {
-      background: var(--danger);
-    }
+    .badge-blocked .badge-dot { background: var(--danger); }
 
     .badge-review {
       color: var(--warning);
       border-color: rgba(250,204,21,0.5);
       background: radial-gradient(circle at top left, rgba(250,204,21,0.18), transparent 60%);
     }
-
-    .badge-review .badge-dot {
-      background: var(--warning);
-    }
+    .badge-review .badge-dot { background: var(--warning); }
 
     .badge-good {
       color: var(--success);
       border-color: rgba(74,222,128,0.5);
       background: radial-gradient(circle at top left, rgba(74,222,128,0.18), transparent 60%);
     }
-
-    .badge-good .badge-dot {
-      background: var(--success);
-    }
+    .badge-good .badge-dot { background: var(--success); }
 
     .badge-unknown {
       color: var(--unknown);
       border-color: rgba(168,85,247,0.5);
       background: radial-gradient(circle at top left, rgba(168,85,247,0.18), transparent 60%);
     }
-
-    .badge-unknown .badge-dot {
-      background: var(--unknown);
-    }
+    .badge-unknown .badge-dot { background: var(--unknown); }
 
     .layout {
       display: grid;
-      grid-template-columns: 1.1fr 1.4fr;
+      grid-template-columns: 1.1fr 1.6fr;
       gap: 16px;
     }
 
-    @media (max-width: 768px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -202,10 +180,7 @@
       pointer-events: none;
     }
 
-    .card-inner {
-      position: relative;
-      z-index: 1;
-    }
+    .card-inner { position: relative; z-index: 1; }
 
     .card-header {
       display: flex;
@@ -245,7 +220,7 @@
 
     textarea {
       width: 100%;
-      min-height: 180px;
+      min-height: 190px;
       resize: vertical;
       border-radius: 10px;
       border: 1px solid rgba(148,163,184,0.5);
@@ -293,9 +268,7 @@
       letter-spacing: 0.12em;
     }
 
-    .btn span.icon {
-      font-size: 0.9rem;
-    }
+    .btn span.icon { font-size: 0.9rem; }
 
     .btn:disabled {
       opacity: 0.6;
@@ -309,7 +282,7 @@
     }
 
     .results-table-wrapper {
-      max-height: 260px;
+      max-height: 280px;
       overflow: auto;
       border-radius: 10px;
       border: 1px solid rgba(30,64,175,0.8);
@@ -344,29 +317,25 @@
       color: var(--muted);
     }
 
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
+    tbody tr:last-child td { border-bottom: none; }
 
     .col-url {
       max-width: 260px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.75rem;
       color: #e5e7eb;
     }
 
     .col-domain {
-      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.75rem;
       color: var(--muted);
     }
 
-    .col-status {
-      width: 1%;
-    }
+    .col-status { width: 1%; }
 
     .col-reason {
       color: var(--muted);
@@ -395,40 +364,28 @@
       border-color: rgba(248,113,113,0.6);
       background: radial-gradient(circle at top left, rgba(248,113,113,0.18), transparent 60%);
     }
-
-    .status-blocked .status-pill-dot {
-      background: var(--danger);
-    }
+    .status-blocked .status-pill-dot { background: var(--danger); }
 
     .status-review {
       color: var(--warning);
       border-color: rgba(250,204,21,0.6);
       background: radial-gradient(circle at top left, rgba(250,204,21,0.18), transparent 60%);
     }
-
-    .status-review .status-pill-dot {
-      background: var(--warning);
-    }
+    .status-review .status-pill-dot { background: var(--warning); }
 
     .status-good {
       color: var(--success);
       border-color: rgba(74,222,128,0.6);
       background: radial-gradient(circle at top left, rgba(74,222,128,0.18), transparent 60%);
     }
-
-    .status-good .status-pill-dot {
-      background: var(--success);
-    }
+    .status-good .status-pill-dot { background: var(--success); }
 
     .status-unknown {
       color: var(--unknown);
       border-color: rgba(168,85,247,0.6);
       background: radial-gradient(circle at top left, rgba(168,85,247,0.18), transparent 60%);
     }
-
-    .status-unknown .status-pill-dot {
-      background: var(--unknown);
-    }
+    .status-unknown .status-pill-dot { background: var(--unknown); }
 
     .empty-state {
       padding: 18px 14px;
@@ -453,6 +410,33 @@
       color: var(--accent);
       font-weight: 500;
     }
+
+    .engine-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 0.68rem;
+    }
+
+    .engine-tag {
+      border-radius: 999px;
+      padding: 1px 7px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--muted);
+      background: rgba(15,23,42,0.9);
+    }
+
+    .engine-tag strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .error-text {
+      color: var(--danger);
+      font-size: 0.7rem;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -460,11 +444,11 @@
     <div class="app-header">
       <div class="title-block">
         <h1>
-          School Link Checker
-          <span class="pill">Heuristic URL triage</span>
+          School Link Scanner
+          <span class="pill">Cisco Talos + FortiGuard</span>
         </h1>
         <div class="subtitle">
-          Paste URLs from student history. This tool classifies links as blocked, needs review, good, or unsure using rule-based logic.
+          Paste URLs from student history. This app calls your backend, which queries Cisco Talos and FortiGuard, then classifies each link as blocked, needs review, good, or unsure.
         </div>
       </div>
       <div class="status-legend">
@@ -497,19 +481,20 @@
           </div>
           <textarea id="urlInput" placeholder="Examples:
 https://boomlings.com
-discord.com/channels/...
-unblockedgames123.net
+https://discord.com/channels/...
+https://unblockedgames123.net
 https://www.khanacademy.org/math
 "></textarea>
           <div class="controls">
             <button id="scanBtn" class="btn">
               <span class="icon">⚡</span>
-              Scan links
+              Scan with Talos + FortiGuard
             </button>
             <div class="small-text">
-              Basic heuristic engine. You can later plug in real filter APIs behind this UI.
+              Uses your backend at <code>/api/scan</code> to query Cisco Talos and FortiGuard safely.
             </div>
           </div>
+          <div id="errorBox" class="error-text" style="display:none;"></div>
         </div>
       </div>
 
@@ -526,7 +511,7 @@ https://www.khanacademy.org/math
           <div class="results-table-wrapper" id="resultsWrapper">
             <div class="empty-state" id="emptyState">
               <span>Run a scan to see classifications.</span>
-              This is a local, rule-based approximation—not a replacement for enterprise filters.
+              This uses Cisco Talos + FortiGuard categories via your backend. Treat “Needs review” and “Unsure” as prompts for human judgment.
             </div>
             <table id="resultsTable" style="display:none;">
               <thead>
@@ -534,14 +519,14 @@ https://www.khanacademy.org/math
                   <th>URL</th>
                   <th>Domain</th>
                   <th>Status</th>
-                  <th>Reason</th>
+                  <th>Reason / Categories</th>
                 </tr>
               </thead>
               <tbody id="resultsBody"></tbody>
             </table>
           </div>
           <div class="footer-note">
-            <strong>Note:</strong> This uses keyword and pattern rules (games, proxies, social, edu, etc.). Treat “Needs review” and “Unsure” as prompts for human judgment or deeper scanning.
+            <strong>Note:</strong> This UI is policy‑aware, but final enforcement should still live in your official filter stack.
           </div>
         </div>
       </div>
@@ -549,13 +534,19 @@ https://www.khanacademy.org/math
   </div>
 
   <script>
-    // --- Utility: normalize URL and extract domain ---
+    const urlInput = document.getElementById("urlInput");
+    const scanBtn = document.getElementById("scanBtn");
+    const resultsTable = document.getElementById("resultsTable");
+    const resultsBody = document.getElementById("resultsBody");
+    const emptyState = document.getElementById("emptyState");
+    const summaryHint = document.getElementById("summaryHint");
+    const errorBox = document.getElementById("errorBox");
+
     function normalizeUrl(raw) {
       if (!raw) return null;
       let trimmed = raw.trim();
       if (!trimmed) return null;
 
-      // Add protocol if missing so URL() doesn't explode
       if (!/^https?:\/\//i.test(trimmed) && !/^ftp:\/\//i.test(trimmed)) {
         trimmed = "https://" + trimmed;
       }
@@ -565,201 +556,25 @@ https://www.khanacademy.org/math
         return {
           original: raw.trim(),
           href: url.href,
-          domain: url.hostname.toLowerCase(),
-          path: url.pathname + url.search
+          domain: url.hostname.toLowerCase()
         };
-      } catch (e) {
-        // Not a valid URL, but we still return something minimal
+      } catch {
         return {
           original: raw.trim(),
           href: raw.trim(),
-          domain: "",
-          path: ""
+          domain: ""
         };
       }
     }
 
-    // --- Heuristic classification engine ---
-    // You can tweak these lists to match your school's policy.
-    const blockedKeywords = [
-      // obvious bypass / proxy / vpn
-      "unblockedgames",
-      "unblocked-games",
-      "unblock",
-      "proxy",
-      "webproxy",
-      "vpn",
-      "ultraviolet",
-      "holyub",
-      "shadowrocket",
-      "bypass",
-      "circumvent",
-      "kproxy",
-      "hidemyass",
-      "tor2web",
-      "onion",
-      // explicit content (keep generic)
-      "porn",
-      "nsfw",
-      "hentai",
-      "sex",
-      "xxx"
-    ];
-
-    const needsReviewKeywords = [
-      // general gaming
-      "game",
-      "games",
-      "roblox",
-      "minecraft",
-      "fortnite",
-      "steam",
-      "epicgames",
-      "leagueoflegends",
-      "valorant",
-      "riotgames",
-      // social / chat
-      "discord",
-      "tiktok",
-      "instagram",
-      "snapchat",
-      "reddit",
-      "twitter",
-      "x.com",
-      "facebook",
-      "messenger",
-      "whatsapp",
-      // streaming / entertainment
-      "youtube",
-      "netflix",
-      "hulu",
-      "spotify",
-      "twitch",
-      "crunchyroll",
-      // AI / tools that might be policy-sensitive
-      "chatgpt",
-      "openai",
-      "claude",
-      "perplexity",
-      "character.ai"
-    ];
-
-    const goodEduKeywords = [
-      "khanacademy.org",
-      "desmos.com",
-      "nasa.gov",
-      "noaa.gov",
-      "nationalgeographic.com",
-      "smithsonian",
-      "ed.gov",
-      "collegeboard.org",
-      "quizlet.com",
-      "duolingo.com",
-      "wikipedia.org",
-      "britannica.com",
-      "code.org"
-    ];
-
-    function classifyLink(info) {
-      const url = (info.href || "").toLowerCase();
-      const domain = (info.domain || "").toLowerCase();
-      const path = (info.path || "").toLowerCase();
-      const combined = domain + path;
-
-      // If URL parsing failed badly
-      if (!domain && !url) {
-        return {
-          status: "unknown",
-          label: "Unsure",
-          reason: "Could not parse URL.",
-        };
+    function verdictToClass(status) {
+      switch (status) {
+        case "blocked": return "status-blocked";
+        case "review": return "status-review";
+        case "good": return "status-good";
+        default: return "status-unknown";
       }
-
-      // 1. Good: strong educational signals
-      if (domain.endsWith(".edu")) {
-        return {
-          status: "good",
-          label: "Good",
-          reason: "Domain uses .edu TLD (likely educational)."
-        };
-      }
-
-      if (domain.endsWith(".gov")) {
-        return {
-          status: "good",
-          label: "Good",
-          reason: "Domain uses .gov TLD (official/government)."
-        };
-      }
-
-      for (const kw of goodEduKeywords) {
-        if (combined.includes(kw)) {
-          return {
-            status: "good",
-            label: "Good",
-            reason: "Matches known educational/resource domain."
-          };
-        }
-      }
-
-      // 2. Blocked: obvious proxies / explicit / bypass
-      for (const kw of blockedKeywords) {
-        if (combined.includes(kw)) {
-          return {
-            status: "blocked",
-            label: "Blocked",
-            reason: `Contains high-risk keyword: "${kw}".`
-          };
-        }
-      }
-
-      // 3. Needs review: games, social, streaming, etc.
-      for (const kw of needsReviewKeywords) {
-        if (combined.includes(kw)) {
-          return {
-            status: "review",
-            label: "Needs review",
-            reason: `Contains distraction/monitor keyword: "${kw}".`
-          };
-        }
-      }
-
-      // 4. Good: generic but common productivity / docs
-      if (
-        domain.includes("google.com") &&
-        (path.startsWith("/docs") || path.startsWith("/spreadsheets") || path.startsWith("/presentation"))
-      ) {
-        return {
-          status: "good",
-          label: "Good",
-          reason: "Looks like a Google Docs/Sheets/Slides link."
-        };
-      }
-
-      if (domain.includes("microsoft.com") || domain.includes("office.com")) {
-        return {
-          status: "good",
-          label: "Good",
-          reason: "Microsoft/Office domain (likely productivity)."
-        };
-      }
-
-      // 5. Unsure: everything else
-      return {
-        status: "unknown",
-        label: "Unsure",
-        reason: "No strong signals. Requires human or deeper filter review."
-      };
     }
-
-    // --- Rendering ---
-    const urlInput = document.getElementById("urlInput");
-    const scanBtn = document.getElementById("scanBtn");
-    const resultsWrapper = document.getElementById("resultsWrapper");
-    const resultsTable = document.getElementById("resultsTable");
-    const resultsBody = document.getElementById("resultsBody");
-    const emptyState = document.getElementById("emptyState");
-    const summaryHint = document.getElementById("summaryHint");
 
     function renderResults(results) {
       resultsBody.innerHTML = "";
@@ -771,12 +586,7 @@ https://www.khanacademy.org/math
         return;
       }
 
-      let counts = {
-        blocked: 0,
-        review: 0,
-        good: 0,
-        unknown: 0
-      };
+      let counts = { blocked: 0, review: 0, good: 0, unknown: 0 };
 
       for (const r of results) {
         counts[r.status] = (counts[r.status] || 0) + 1;
@@ -797,7 +607,7 @@ https://www.khanacademy.org/math
         const tdStatus = document.createElement("td");
         tdStatus.className = "col-status";
         const pill = document.createElement("span");
-        pill.className = "status-pill status-" + r.status;
+        pill.className = "status-pill " + verdictToClass(r.status);
         const dot = document.createElement("span");
         dot.className = "status-pill-dot";
         const label = document.createElement("span");
@@ -809,9 +619,39 @@ https://www.khanacademy.org/math
 
         const tdReason = document.createElement("td");
         tdReason.className = "col-reason";
-        tdReason.textContent = r.reason;
-        tr.appendChild(tdReason);
 
+        const reasonText = document.createElement("div");
+        reasonText.textContent = r.reason || "No reason provided.";
+        tdReason.appendChild(reasonText);
+
+        const tags = document.createElement("div");
+        tags.className = "engine-tags";
+
+        if (r.talos && (r.talos.category || r.talos.score !== undefined)) {
+          const tag = document.createElement("span");
+          tag.className = "engine-tag";
+          tag.innerHTML =
+            "<strong>Talos</strong>: " +
+            (r.talos.category || "n/a") +
+            (r.talos.score !== undefined ? ` (score: ${r.talos.score})` : "");
+          tags.appendChild(tag);
+        }
+
+        if (r.fortiguard && (r.fortiguard.category || r.fortiguard.threat)) {
+          const tag = document.createElement("span");
+          tag.className = "engine-tag";
+          tag.innerHTML =
+            "<strong>FortiGuard</strong>: " +
+            (r.fortiguard.category || "n/a") +
+            (r.fortiguard.threat ? ` [${r.fortiguard.threat}]` : "");
+          tags.appendChild(tag);
+        }
+
+        if (tags.children.length > 0) {
+          tdReason.appendChild(tags);
+        }
+
+        tr.appendChild(tdReason);
         resultsBody.appendChild(tr);
       }
 
@@ -827,28 +667,61 @@ https://www.khanacademy.org/math
         `${counts.unknown} unsure.`;
     }
 
-    function runScan() {
+    async function runScan() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+
       const raw = urlInput.value || "";
       const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
 
-      const results = [];
-      for (const line of lines) {
-        const info = normalizeUrl(line);
-        const classification = classifyLink(info);
-        results.push({
-          info,
-          ...classification
-        });
+      const normalized = lines.map(line => normalizeUrl(line)).filter(Boolean);
+      if (!normalized.length) {
+        renderResults([]);
+        return;
       }
 
-      renderResults(results);
+      scanBtn.disabled = true;
+      scanBtn.innerHTML = '<span class="icon">⏳</span>Scanning…';
+
+      try {
+        const response = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            urls: normalized.map(n => n.href)
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Backend error: " + response.status);
+        }
+
+        const data = await response.json();
+        // Expecting: [{ url, info, status, label, reason, talos, fortiguard }]
+        const merged = data.results.map((r, idx) => ({
+          info: normalized[idx],
+          status: r.status || "unknown",
+          label: r.label || "Unsure",
+          reason: r.reason || "",
+          talos: r.talos || null,
+          fortiguard: r.fortiguard || null
+        }));
+
+        renderResults(merged);
+      } catch (err) {
+        console.error(err);
+        errorBox.textContent = "Error contacting /api/scan. Check that your backend is running and configured.";
+        errorBox.style.display = "block";
+      } finally {
+        scanBtn.disabled = false;
+        scanBtn.innerHTML = '<span class="icon">⚡</span>Scan with Talos + FortiGuard';
+      }
     }
 
     scanBtn.addEventListener("click", () => {
       runScan();
     });
 
-    // Allow Ctrl+Enter / Cmd+Enter to scan
     urlInput.addEventListener("keydown", (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
